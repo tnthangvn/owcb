@@ -1,0 +1,33 @@
+{
+  "type": "lifecycle",
+  "title": "Deployment release lifecycle",
+  "subtitle": "From a queued change to a live release, with approval and rollback",
+  "states": [
+    { "id": "queued", "kind": "initial", "label": "Queued", "detail": "change accepted", "tag": "pending" },
+    { "id": "building", "kind": "normal", "label": "Building", "detail": "immutable image", "tag": "running" },
+    { "id": "verifying", "kind": "decision", "label": "Verifying", "detail": "tests + policy", "tag": "gate" },
+    { "id": "ready", "kind": "waiting", "label": "Ready", "detail": "promotion pending" },
+    { "id": "live", "kind": "success", "label": "Live", "detail": "production healthy" },
+    { "id": "approval", "kind": "waiting", "label": "Needs approval", "detail": "release owner" },
+    { "id": "cancelled", "kind": "error", "label": "Cancelled", "detail": "approval denied", "tag": "terminal" },
+    { "id": "rollback", "kind": "normal", "label": "Rolling back", "detail": "last good image" },
+    { "id": "rolled_back", "kind": "terminal", "label": "Rolled back", "detail": "service restored", "tag": "terminal" },
+    { "id": "retired", "kind": "terminal", "label": "Retired", "detail": "defined, no transition yet" }
+  ],
+  "transitions": [
+    { "from": "queued", "to": "building", "label": "pick up" },
+    { "from": "building", "to": "verifying", "label": "image built" },
+    { "from": "verifying", "to": "ready", "label": "checks pass" },
+    { "from": "ready", "to": "live", "label": "promote", "tone": "main", "note": "Release owner clicks Promote" },
+    { "from": "verifying", "to": "building", "label": "tests fail" },
+    { "from": "verifying", "to": "approval", "label": "needs sign-off", "tone": "security" },
+    { "from": "approval", "to": "ready", "label": "approved" },
+    { "from": "approval", "to": "cancelled", "label": "denied", "tone": "security" },
+    { "from": "live", "to": "rollback", "label": "SLO breach", "tone": "auto", "note": "Automatic when the alert persists" },
+    { "from": "rollback", "to": "rolled_back", "label": "restored" }
+  ],
+  "cards": [
+    { "title": "Promotion path", "items": ["The release moves through five ordered phases", "Verification and approval are separate states"] },
+    { "title": "Endings", "items": ["Denied approval ends as Cancelled", "A restored rollback is a terminal outcome"] }
+  ]
+}

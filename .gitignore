@@ -1,0 +1,27 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Local tooling
+.codegraph/
+.claude/worktrees/
+.claude/settings.local.json
+node_modules/
+*.log
+
+# codebase-workflow work files (regenerable: `make clean`)
+*/src/pages/*/review-*/
+*/src/pages/*/build-*/
+*/src/pages/*/compiled/
+*/src/pages/*/out/
+*/src/pages/*/receipts/
+*/src/pages/*/worker.log
+*.delivery-pending.json

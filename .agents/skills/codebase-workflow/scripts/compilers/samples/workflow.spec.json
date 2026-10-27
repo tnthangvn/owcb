@@ -1,0 +1,49 @@
+{
+  "type": "workflow",
+  "title": "Leave request and approval",
+  "lanes": [
+    { "id": "employee", "label": "Employee" },
+    { "id": "manager", "label": "Line manager" },
+    { "id": "system", "label": "HR system" },
+    { "id": "problems", "label": "Rejected or blocked", "variant": "exception" }
+  ],
+  "phases": [
+    { "id": "ask", "label": "1. Ask", "steps": ["open", "fill", "submit"] },
+    { "id": "decide", "label": "2. Decide", "steps": ["review", "approve", "reject"] },
+    { "id": "after", "label": "3. After approval", "steps": ["balance", "notify", "calendar"] }
+  ],
+  "groups": [
+    { "id": "form", "label": "Request form", "steps": ["fill", "submit"] }
+  ],
+  "steps": [
+    { "id": "open", "label": "Open My leave", "sublabel": "see remaining days", "lane": "employee", "kind": "start" },
+    { "id": "fill", "label": "Fill the form", "sublabel": "dates, type, reason", "lane": "employee", "detail": "Half days are allowed; attachments up to 5 MB." },
+    { "id": "submit", "label": "Send request", "sublabel": "status: Pending", "lane": "employee" },
+    { "id": "review", "label": "Review request", "sublabel": "team calendar shown", "lane": "manager", "kind": "decision" },
+    { "id": "approve", "label": "Approve", "lane": "manager", "kind": "approval", "tag": "manager only" },
+    { "id": "reject", "label": "Reject with reason", "sublabel": "reason is required", "lane": "problems", "kind": "error" },
+    { "id": "balance", "label": "Deduct balance", "sublabel": "automatic", "lane": "system", "kind": "system" },
+    { "id": "notify", "label": "Email the employee", "lane": "system", "kind": "async" },
+    { "id": "calendar", "label": "See it on the calendar", "sublabel": "status: Approved", "lane": "employee", "kind": "end" }
+  ],
+  "edges": [
+    { "from": "open", "to": "fill", "label": "New request" },
+    { "from": "fill", "to": "submit" },
+    { "from": "submit", "to": "review", "label": "goes to manager", "variant": "emphasis" },
+    { "from": "review", "to": "approve", "variant": "emphasis" },
+    { "from": "review", "to": "reject", "label": "no", "variant": "security", "role": "error" },
+    { "from": "reject", "to": "fill", "label": "edit and resend", "variant": "dashed" },
+    { "from": "approve", "to": "balance", "variant": "emphasis" },
+    { "from": "balance", "to": "notify", "variant": "dashed", "role": "async" },
+    { "from": "balance", "to": "calendar", "variant": "emphasis" }
+  ],
+  "cards": [
+    { "title": "Who can approve", "items": ["The employee's line manager", "HR when no manager is set"] },
+    { "title": "Balance rules", "items": ["Balance drops only after approval", "Rejected requests keep the balance"] }
+  ],
+  "legend": [
+    { "kind": "frontend", "label": "Screen or action" },
+    { "kind": "security", "label": "Decision or rejection" },
+    { "kind": "backend", "label": "Done by the system" }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "type": "architecture",
+  "id": "sample-architecture",
+  "title": "Sample web app",
+  "views": [
+    { "id": "request", "label": "Request path", "focus": ["user", "web", "gateway", "api", "db"], "note": "A signed-in request from the browser to the database." }
+  ],
+  "components": [
+    { "id": "user", "label": "Users", "sublabel": "browser", "kind": "external" },
+    { "id": "web", "label": "Web SPA", "sublabel": "React", "kind": "frontend" },
+    { "id": "idp", "label": "Identity provider", "sublabel": "OIDC", "kind": "security", "boundary": "edge" },
+    { "id": "gateway", "label": "API gateway", "sublabel": "TLS :443", "kind": "security", "boundary": "edge" },
+    { "id": "api", "label": "API server", "sublabel": "REST :3000", "kind": "backend", "boundary": "private", "detail": "Validates the gateway's user header; no JWT check of its own." },
+    { "id": "db", "label": "PostgreSQL", "sublabel": "primary", "kind": "database", "boundary": "private" },
+    { "id": "queue", "label": "Job queue", "sublabel": "AMQP", "kind": "messagebus", "boundary": "private" },
+    { "id": "worker", "label": "Worker", "sublabel": "async jobs", "kind": "backend", "boundary": "private" },
+    { "id": "mail", "label": "Mail service", "sublabel": "SMTP", "kind": "external" }
+  ],
+  "boundaries": [
+    { "id": "edge", "label": "Edge", "kind": "security-group" },
+    { "id": "private", "label": "Private network", "kind": "region" }
+  ],
+  "connections": [
+    { "from": "user", "to": "web", "label": "HTTPS", "variant": "emphasis" },
+    { "from": "web", "to": "idp", "label": "login", "protocol": "PKCE", "variant": "security" },
+    { "from": "web", "to": "gateway", "label": "Bearer", "variant": "emphasis" },
+    { "from": "gateway", "to": "idp", "label": "JWKS", "variant": "security" },
+    { "from": "gateway", "to": "api", "label": "user header", "variant": "emphasis" },
+    { "from": "api", "to": "db", "label": "SQL", "variant": "emphasis" },
+    { "from": "api", "to": "queue", "label": "enqueue", "variant": "dashed" },
+    { "from": "queue", "to": "worker", "label": "consume", "variant": "dashed" },
+    { "from": "worker", "to": "mail", "label": "send" }
+  ],
+  "cards": [
+    { "dot": "rose", "title": "Security", "items": ["The gateway checks tokens; the API trusts its header."] }
+  ]
+}

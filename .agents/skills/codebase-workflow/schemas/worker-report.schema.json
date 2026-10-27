@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "codebase-workflow/worker-report.schema.json",
+  "title": "Worker report for one page task",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["page", "status", "agent", "attempts", "outputs", "covers_done", "difficulties"],
+  "properties": {
+    "page": { "type": "string" },
+    "status": { "enum": ["done", "partial", "failed", "blocked"] },
+    "agent": {
+      "type": "object",
+      "required": ["cli", "model"],
+      "properties": { "cli": { "type": "string" }, "model": { "type": "string" } }
+    },
+    "attempts": { "type": "integer", "minimum": 1, "description": "finalize runs until the last result" },
+    "duration_min": { "type": "number" },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["lang", "candidate", "html", "finalize"],
+        "properties": {
+          "lang": { "type": "string" },
+          "candidate": { "type": "string" },
+          "html": { "type": "string" },
+          "finalize": { "enum": ["passed", "failed", "not-run"] }
+        }
+      }
+    },
+    "covers_done": { "type": "array", "items": { "type": "string" } },
+    "covers_missing": { "type": "array", "items": { "type": "string" } },
+    "difficulties": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["category", "detail"],
+        "properties": {
+          "category": { "enum": ["archify-gate", "missing-source", "schema", "cli-flags", "model-quality", "timeout", "coverage", "i18n", "other"] },
+          "detail": { "type": "string" },
+          "suggestion": { "type": "string" }
+        }
+      }
+    },
+    "unknowns": { "type": "array", "items": { "type": "string" } }
+  }
+}

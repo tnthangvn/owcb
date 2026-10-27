@@ -1,0 +1,32 @@
+{
+  "type": "dataflow",
+  "id": "sample-dataflow",
+  "title": "Sample analytics pipeline",
+  "stages": [
+    { "id": "collect", "label": "Collect" },
+    { "id": "ingest", "label": "Ingest" },
+    { "id": "process", "label": "Process" },
+    { "id": "store", "label": "Store" },
+    { "id": "use", "label": "Use" }
+  ],
+  "nodes": [
+    { "id": "web", "label": "Web app", "sublabel": "browser SDK", "kind": "frontend", "stage": "collect" },
+    { "id": "mobile", "label": "Mobile app", "sublabel": "iOS / Android", "kind": "frontend", "stage": "collect" },
+    { "id": "collector", "label": "Collector", "sublabel": "HTTPS endpoint", "kind": "cloud", "stage": "ingest" },
+    { "id": "consent", "label": "Consent filter", "sublabel": "drops opted-out users", "kind": "security" },
+    { "id": "stream", "label": "Event stream", "sublabel": "ordered topic", "kind": "messagebus", "stage": "process" },
+    { "id": "warehouse", "label": "Warehouse", "sublabel": "fact tables", "kind": "database", "stage": "store", "detail": "Rebuilt nightly from the stream." },
+    { "id": "dashboards", "label": "Dashboards", "sublabel": "product metrics", "kind": "backend", "stage": "use" }
+  ],
+  "flows": [
+    { "from": "web", "to": "collector", "label": "clicks", "variant": "emphasis" },
+    { "from": "mobile", "to": "collector", "label": "app events" },
+    { "from": "collector", "to": "consent", "label": "identity", "variant": "security" },
+    { "from": "collector", "to": "stream", "label": "accepted", "variant": "emphasis" },
+    { "from": "stream", "to": "warehouse", "label": "facts", "variant": "emphasis" },
+    { "from": "warehouse", "to": "dashboards", "label": "metrics SQL" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Main path", "items": ["Events move left to right from apps to dashboards."] }
+  ]
+}

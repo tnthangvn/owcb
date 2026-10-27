@@ -1,0 +1,38 @@
+{
+  "type": "tree",
+  "title": "Sample app screens",
+  "subtitle": "Links show only which group a screen belongs to.",
+  "root": {
+    "id": "app",
+    "label": "Sample app",
+    "sublabel": "Screen map",
+    "children": [
+      {
+        "id": "g_auth",
+        "label": "Sign in",
+        "sublabel": "Before the user is logged in",
+        "children": [
+          { "id": "login", "label": "Login", "sublabel": "Redirects to SSO", "tag": "Redirect" },
+          { "id": "register", "label": "Register", "sublabel": "Needs realm setting" }
+        ]
+      },
+      {
+        "id": "g_orders",
+        "label": "Orders",
+        "children": [
+          {
+            "id": "orders",
+            "label": "Order list",
+            "sublabel": "Search and filter",
+            "children": [
+              { "id": "orders_tab_open", "label": "Open", "tag": "Tab" },
+              { "id": "orders_tab_done", "label": "Done", "tag": "Tab" }
+            ]
+          },
+          { "id": "order_new", "label": "New order", "tag": "Unfinished" }
+        ]
+      }
+    ]
+  },
+  "cards": [{ "dot": "cyan", "title": "How to read", "items": ["Tags mark tabs, redirects and unfinished screens."] }]
+}

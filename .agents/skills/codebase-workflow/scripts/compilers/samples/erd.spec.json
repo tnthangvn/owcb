@@ -1,0 +1,41 @@
+{
+  "type": "erd",
+  "title": "Sample orders schema",
+  "subtitle": "Customers, orders and line items",
+  "domains": [
+    { "id": "accounts", "tag": "Accounts" },
+    { "id": "sales", "tag": "Sales" }
+  ],
+  "entities": [
+    {
+      "id": "customers", "label": "customers", "domain": "accounts",
+      "attributes": [
+        { "name": "id", "type": "uuid", "key": "pk" },
+        { "name": "email", "type": "varchar(255)", "key": "uk", "comment": "login name" },
+        { "name": "tenant_id", "type": "uuid", "key": "fk", "references": "tenants.id" }
+      ]
+    },
+    {
+      "id": "orders", "label": "orders", "domain": "sales",
+      "attributes": [
+        { "name": "id", "type": "uuid", "key": "pk" },
+        { "name": "customer_id", "type": "uuid", "key": "fk", "references": "customers.id" },
+        { "name": "status", "type": "order_status" },
+        { "name": "total", "type": "decimal(12,2)" }
+      ]
+    },
+    {
+      "id": "order_items", "label": "order_items", "domain": "sales",
+      "attributes": [
+        { "name": "order_id", "type": "uuid", "key": ["pk", "fk"], "references": "orders.id" },
+        { "name": "line_no", "type": "integer", "key": "pk" },
+        { "name": "quantity", "type": "integer" }
+      ]
+    }
+  ],
+  "relationships": [
+    { "from": "orders", "to": "customers", "cardinality": "many-to-one" },
+    { "from": "order_items", "to": "orders", "cardinality": "many-to-one" }
+  ],
+  "cards": [{ "dot": "cyan", "title": "Note", "items": ["tenant_id points at a table on another page, so it is a plain column."] }]
+}

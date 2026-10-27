@@ -1,0 +1,39 @@
+{
+  "type": "sequence",
+  "title": "Cache miss request",
+  "subtitle": "A page load that falls back from cache to the database",
+  "participants": [
+    { "id": "user", "kind": "external", "label": "User", "sublabel": "browser" },
+    { "id": "web", "kind": "frontend", "label": "Web app", "sublabel": "React UI" },
+    { "id": "api", "kind": "backend", "label": "API", "sublabel": "request handler" },
+    { "id": "cache", "kind": "database", "label": "Redis", "sublabel": "cache" },
+    { "id": "db", "kind": "database", "label": "Postgres", "sublabel": "source of truth" }
+  ],
+  "phases": [
+    { "label": "1. Request", "from": "open", "to": "get-dashboard" },
+    { "label": "2. Cache then database", "from": "read-cache", "to": "rows" },
+    { "label": "3. Response", "from": "json", "to": "render" }
+  ],
+  "messages": [
+    { "id": "open", "from": "user", "to": "web", "label": "open page" },
+    { "id": "get-dashboard", "from": "web", "to": "api", "label": "GET /dashboard", "tone": "main", "note": "Bearer token is attached by the HTTP client" },
+    { "id": "read-cache", "from": "api", "to": "cache", "label": "read cache" },
+    { "id": "miss", "from": "cache", "to": "api", "kind": "return", "label": "miss" },
+    { "id": "build", "from": "api", "kind": "self", "label": "decide to query the database" },
+    { "id": "query", "from": "api", "to": "db", "label": "query profile and metrics", "tone": "main" },
+    { "id": "rows", "from": "db", "to": "api", "kind": "return", "label": "rows" },
+    { "id": "set-cache", "from": "api", "to": "cache", "kind": "async", "label": "set cache" },
+    { "id": "json", "from": "api", "to": "web", "kind": "return", "label": "200 JSON" },
+    { "id": "render", "from": "web", "to": "user", "kind": "return", "label": "render" }
+  ],
+  "activations": [
+    { "participant": "api", "from": "get-dashboard", "to": "json" }
+  ],
+  "notes": [
+    { "message": "set-cache", "text": "Does not block the response" }
+  ],
+  "cards": [
+    { "title": "Happy path", "items": ["The page request goes Web app, API, data source and back", "Returns are quieter than calls"] },
+    { "title": "Fallback", "items": ["A cache miss falls through to the database", "The cache is refilled in the background"] }
+  ]
+}

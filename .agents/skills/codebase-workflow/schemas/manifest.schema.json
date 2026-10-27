@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "codebase-workflow/manifest.schema.json",
+  "title": "codebase-workflow project manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "project", "title", "languages", "groups", "pages"],
+  "properties": {
+    "version": { "const": 1 },
+    "project": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "title": { "$ref": "#/$defs/text" },
+    "summary": { "$ref": "#/$defs/text" },
+    "languages": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/lang" } },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["codebase", "idea", "plan", "docs", "mixed"] },
+        "repo": { "type": "string", "not": { "pattern": "^(/|[A-Za-z]:\\\\|file:)" } },
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" }
+      }
+    },
+    "generatedAt": { "type": "string" },
+    "generator": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "groups": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title"],
+        "properties": {
+          "id": { "$ref": "#/$defs/id" },
+          "title": { "$ref": "#/$defs/text" },
+          "summary": { "$ref": "#/$defs/text" }
+        }
+      }
+    },
+    "pages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "group", "title", "summary", "type", "audience", "files"],
+        "properties": {
+          "id": { "$ref": "#/$defs/id" },
+          "group": { "$ref": "#/$defs/id" },
+          "title": { "$ref": "#/$defs/text" },
+          "summary": { "$ref": "#/$defs/text" },
+          "type": { "enum": ["architecture", "workflow", "sequence", "dataflow", "lifecycle", "erd", "class", "tree", "timeline", "waterfall", "explainer", "legacy"] },
+          "audience": { "enum": ["end-user", "dev", "both"] },
+          "files": {
+            "type": "object",
+            "minProperties": 1,
+            "propertyNames": { "$ref": "#/$defs/lang" },
+            "additionalProperties": { "type": "string", "pattern": "^(?!/)(?!.*\\.\\.)(?!file:)[^\\\\]+\\.html$" }
+          },
+          "covers": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "lang": { "type": "string", "pattern": "^[a-z]{2}(-[A-Za-z]{2,4})?$" },
+    "text": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/lang" },
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    }
+  }
+}
